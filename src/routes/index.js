@@ -10,10 +10,9 @@ router.get('/llaves', (req, res) => {
     const publicKey = encryptionService.getPublicKey();
     const privateKey = encryptionService.getPrivateKey();
     const keys = {
-        publicKey: publicKey,
-        privateKey: privateKey
+        publicKey: publicKey.replaceAll("\r\n", ""),
+        privateKey: privateKey.replaceAll("\r\n", "")
     };
-    console.log(keys)
     res.send(JSON.stringify(keys));
 
 });
@@ -21,27 +20,22 @@ router.get('/llaves', (req, res) => {
 
 router.post('/escenario',(req, res) =>{
 
-    console.log(req.body.escenario)
+    // console.log(req.body.escenario)
     encryptionService.decryptData(req.body.escenario).then((data)=>{
 
-        if(data){
-            console.log("================================")
+        const jsonData = JSON.parse(data)
 
-            console.log(data)
-        }
         if(data == null){
             res.sendStatus(403);
-        }else if(data.flujo == "inicio"){
+        }else if(jsonData.flujo == "inicio"){
             
             encryptionService.encryptData('{"flujo":"Formulario"}').then((flow)=>{
                 res.json(flow);
             });
-        }else if(data.flujo == "Formulario"){
-            if(data.numDocumento && data.nombre){
-                let json =  '{“exitoso”: true, “mensaje”: "¡DATOSRECIBIDOS!"}'
-                // console.log(json)
-                encryptionService.encryptData(json).then((succesMessage)=>{
-                    // console.log(succesMessage)
+        }else if(jsonData.flujo == "Formulario"){
+            if(jsonData.numDocumento && jsonData.nombre){
+                    let json =  '{"exitoso": true, "mensaje": "¡DATOSRECIBIDOS!"}'
+                    encryptionService.encryptData(json).then((succesMessage)=>{
                     res.json(succesMessage);
                 });
             }
