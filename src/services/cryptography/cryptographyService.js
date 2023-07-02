@@ -11,9 +11,9 @@ function generateKeyPair() {
 //   const keystore = jose.JWK.createKeyStore();
   keyPairGenerationPromise = keystore.generate('RSA', 2048, { alg: 'RSA-OAEP-256' })
     .then((result) => {
-
-      publicKey = result;
-      privateKey = keystore.all()[1]; // Assign the generated private key
+        publicKey = result.toPEM();
+        privateKey = result.toPEM(true);
+        console.log("Keys generated")
     })
     .catch(error => {
       console.error('Key pair generation failed:', error);
@@ -39,9 +39,15 @@ async function encryptData(data) {
 // Decrypt data using the decryptor
 async function decryptData(encryptedData) {
   await keyPairGenerationPromise;
+    
+  console.log(encryptedData)
 
   try {
+    
+
     const decrypted = await jose.JWE.createDecrypt(keystore).decrypt(encryptedData);
+    console.log(encryptedData)
+    console.log("*************************")
     return JSON.parse(decrypted.plaintext.toString('utf8'));
   } catch (error) {
     console.error('Decryption failed:', error);
@@ -53,7 +59,6 @@ async function decryptData(encryptedData) {
 function getPublicKey() {
   return publicKey;
 }
-
 // Get the generated private key
 function getPrivateKey() {
   return privateKey;
