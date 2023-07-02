@@ -34,9 +34,15 @@ router.post('/escenario',(req, res) =>{
             });
         }else if(jsonData.flujo == "Formulario"){
             if(jsonData.numDocumento && jsonData.nombre){
-                    let json =  '{"exitoso": true, "mensaje": "¡DATOSRECIBIDOS!"}'
+                    let json =  '{"exitoso": true, "mensaje": "¡DATOS RECIBIDOS!"}'
                     encryptionService.encryptData(json).then((succesMessage)=>{
                     res.json(succesMessage);
+                });
+            }else{
+                let json =  '{"exitoso": false, "mensaje": "¡DATOS INCORRECTOS!"}'
+                encryptionService.encryptData(json).then((succesMessage)=>{
+                res.json(succesMessage);
+                console.log('Request:%s\nResponse:%s',req,res)
                 });
             }
         }
